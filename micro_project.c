@@ -41,15 +41,15 @@ void setupTimer2() {
 }
 
 // Servo motoru kontrol etmek için PWM sinyali üretme
-void servoDondur(int angle) {
-    int pwmDeger = (angle * 10) + 500;  // PWM sinyalini hesapla, 0-180 derece için orantı yapılıyor
+void moveServo(int angle) {
+    int pwmValue = (angle * 10) + 500;  // PWM sinyalini hesapla, 0-180 derece için orantı yapılıyor
     CCP1CONbits.CCP1M = 0b1100;  // PWM moduna ayarla
-    CCPR1L = pwmDeger >> 2;      // PWM değeri yüksek byte'ı
-    CCP1CONbits.DC1B = pwmDeger & 0x03; // PWM değeri düşük byte'ı
+    CCPR1L = pwmValue >> 2;      // PWM değeri yüksek byte'ı
+    CCP1CONbits.DC1B = pwmValue & 0x03; // PWM değeri düşük byte'ı
 }
 
 // Ultrasonik sensörden mesafe ölçümü
-int mesafeyiOlc() {
+int readDistance() {
     int distance;
     TRIG_PIN = 1;  // Trigger pulse başlat
     __delay_us(10); // 10 mikrosaniye
@@ -62,7 +62,7 @@ int mesafeyiOlc() {
 }
 
 // Buton ile başlatma/durdurma
-void butonKontrol() {
+void buttonCheck() {
     static int radarRunning = 0;
     if (BUTTON_PIN == 1) {  // Butona basıldığında
         radarRunning = !radarRunning;  // Radar başlat/durdur
@@ -107,8 +107,8 @@ void main() {
     int angle = 0;
 
     while (1) {
-        butonKontrol();   // Buton kontrolü
-        int distance = mesafeyiOlc();  // Mesafe ölçümü
+        buttonCheck();   // Buton kontrolü
+        int distance = readDistance();  // Mesafe ölçümü
 
         // LCD ekranında mesafeyi göster
         char message[16];
@@ -119,7 +119,7 @@ void main() {
 
         // Servo motorun hareketi ve radar işlemleri
         if (angle < 180) {
-            servoDondur(angle);
+            moveServo(angle);
             angle += 1; // Her döngüde servo 1 derece hareket edecek
         } else {
             angle = 0; // 180 dereceye ulaştığında 0'a geri dön
