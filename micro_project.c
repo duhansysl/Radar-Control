@@ -24,6 +24,11 @@ void config() {
     T2CON = 0x04;   // Timer2 prescaler 1:1, aktif et
     TMR2 = 0;       // Timer2'yi sıfırla
     TRISBbits.TRISB0 = 1;  // Buton giriş olarak ayarlandı
+    
+    // Timer1 için yapılandırma (3 saniye için)
+    T1CON = 0x31;   // Timer1 prescaler 1:8, aktif et
+    TMR1H = 0;      // Timer1 başlangıç değeri
+    TMR1L = 0;
 }
 
 // Timer2 yapılandırması
@@ -79,6 +84,16 @@ void __interrupt() ISR() {
         TMR2IF = 0;   // Timer2 kesmesini temizle
         BUZZER_PIN = 0; // Buzzer'ı kapat
         // Radar'ı tekrar başlatabiliriz
+    }
+
+    if (TMR1IF) {  // Timer1 kesmesi
+        TMR1IF = 0;  // Timer1 kesmesini temizle
+        // 3 saniye sonunda radar tekrar çalışacak
+        BUZZER_PIN = 1; // Buzzer'ı çaldır
+        TMR1H = 0;  // Timer1'yi sıfırla
+        TMR1L = 0;
+        TMR2 = 0;   // Timer2'yi başlat (3 saniye için)
+        TMR2IF = 0; // Timer2 kesmesini sıfırla
     }
 }
 
