@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pic16f887.h>
+#include "lcd.h"  // LCD kütüphanesi
 
 #define _XTAL_FREQ 4000000  // 4 MHz Freq
 #define BUTTON_PIN PORTBbits.RB0 // Buton, RB0 pinine bağlanacak
@@ -10,14 +11,6 @@
 #define ECHO_PIN PORTBbits.RB2   // HC-SR04 echo pin RB2'ye bağlanacak
 #define BUZZER_PIN LATAbits.LATA0 // Buzzer, RA0 pinine bağlanacak
 #define SERVO_PIN LATCbits.LC0  // Servo motor pin, RC0 pinine bağlanacak
-
-// LCD için gerekli pin tanımlamaları
-#define RS LATDbits.LATD0
-#define EN LATDbits.LATD1
-#define D4 LATDbits.LATD4
-#define D5 LATDbits.LATD5
-#define D6 LATDbits.LATD6
-#define D7 LATDbits.LATD7
 
 // Konfigürasyon ayarları
 void config() {
@@ -63,31 +56,19 @@ int mesafeyiOlc() {
     return distance;
 }
 
-// LCD mesajını ekranda gösterme (Basit bir LCD yazdırma fonksiyonu)
-void mesajGoster(char *message) {
-    // LCD pinlerini kullanarak mesajı yazdırıyoruz (Örnek basit LCD yazdırma)
-    RS = 0;
-    EN = 1;
-    D4 = (message[0] >> 4) & 0x01;
-    D5 = (message[0] >> 5) & 0x01;
-    D6 = (message[0] >> 6) & 0x01;
-    D7 = (message[0] >> 7) & 0x01;
-    EN = 0;
-    __delay_ms(1);
-    
-    // Diğer karakterler için benzer şekilde devam edebiliriz
-    // Bu kısmı LCD'nin datasheet'ine göre tamamlayabilirsiniz.
-}
-
 // Buton ile başlatma/durdurma
 void butonKontrol() {
     static int radarRunning = 0;
     if (BUTTON_PIN == 1) {  // Butona basıldığında
         radarRunning = !radarRunning;  // Radar başlat/durdur
         if (radarRunning) {
-            mesajGoster("Radar Baslatildi");
+            LCD_Clear();
+            LCD_Set_Cursor(1, 1);
+            LCD_Write_String("Radar Baslatildi");
         } else {
-            mesajGoster("Radar Durduruldu");
+            LCD_Clear();
+            LCD_Set_Cursor(1, 1);
+            LCD_Write_String("Radar Durduruldu");
         }
     }
 }
@@ -104,6 +85,7 @@ void __interrupt() ISR() {
 // Ana fonksiyon
 void main() {
     config();           // Konfigürasyon ayarları
+    LCD_Init();         // LCD'yi başlat
     setupTimer2();      // Timer2 yapılandırması
 
     // Servo motorun başlangıç açısını belirleyelim
@@ -116,7 +98,9 @@ void main() {
         // LCD ekranında mesafeyi göster
         char message[16];
         sprintf(message, "Mesafe: %d cm", distance);
-        mesajGoster(message);
+        LCD_Clear();
+        LCD_Set_Cursor(1, 1);   // Satır 1, sütun 1'e yerleştir
+        LCD_Write_String(message);
 
         // Servo motorun hareketi ve radar işlemleri
         if (angle < 180) {
