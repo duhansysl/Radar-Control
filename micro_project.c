@@ -5,7 +5,9 @@
 #include <pic16f887.h>
 #include "lcd.h"  // LCD kütüphanesi
 
-#define _XTAL_FREQ 4000000  // 4 MHz Freq
+#fuses XT
+#use delay(clock=4M)
+
 #define BUTTON_PIN PORTBbits.RB0 // Buton, RB0 pinine bağlanacak
 #define TRIG_PIN LATBbits.LB1    // HC-SR04 trig pin RB1'e bağlanacak
 #define ECHO_PIN PORTBbits.RB2   // HC-SR04 echo pin RB2'ye bağlanacak
