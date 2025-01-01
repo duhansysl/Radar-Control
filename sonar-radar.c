@@ -28,3 +28,6 @@
 // Ultrasonik sensör pinleri
 #define TRIGGER_PIN PIN_B0
 #define ECHO_PIN PIN_B1
+
+// Radar ölçüm menzili (LÜTFEN GİRİNİZ!!!)
+#define RADAR_DISTANCE 20 // CM cinsinden mesafe
