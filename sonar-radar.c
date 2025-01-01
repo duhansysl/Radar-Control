@@ -81,3 +81,52 @@ void move_servo() {
         duty = deger[adim];			// Servo açısını güncelle
     }
 }
+
+//----------------------- U L T R A S O N İ K - S E N S Ö R -------------------------------------------------------
+
+// Kalibrasyon faktörü
+float calibration_factor = 30.0;  // Mesafe kalibrasyon çarpanı, elimle deneyerek kalibre ettim
+unsigned int16 distance;
+
+void measure_distance() {
+    unsigned int16 i = 0;
+
+    // Ölçüm fonksiyonu LCD için gerekli kodlar
+    lcd_putc("\f");  
+    lcd_gotoxy(1, 1);
+    lcd_putc("Radar Calisiyor.");
+    lcd_gotoxy(1, 2);
+    lcd_putc("Taraniyor...");
+	
+	// SONAR sensör için trigger/echo gönder/al komutları
+    output_high(TRIGGER_PIN);
+    delay_us(10);
+    output_low(TRIGGER_PIN);
+    set_timer1(0);
+    while (!input(ECHO_PIN) && (get_timer1() < 5000));
+	
+	//Gerekli mesafe hesaplamaları
+    if (get_timer1() >= 5000)
+        return;
+    set_timer1(0);
+    while (input(ECHO_PIN) && (i < 25000))
+        i = get_timer1();
+    if (i >= 25000)
+        return;
+	
+    distance = i / calibration_factor;
+	
+	// ÜStte tanımlanan mesafede cisim tespit edilirse yapılacak olan kesme (interrupt) fonksiyonu
+    if (distance < RADAR_DISTANCE && distance != 0) {
+        disable_interrupts(GLOBAL);  // Tüm kesmeleri devre dışı bırakır
+        lcd_putc("\f");  
+        lcd_gotoxy(1, 1);
+        lcd_putc("CISIM BULUNDU!");
+        lcd_gotoxy(1, 2);
+        printf(lcd_putc, "Mesafe: %3Lu cm", distance);
+        output_high(BUZZER_PIN);  
+        delay_ms(3000);  // 3 saniye buzzer çaldırır
+        output_low(BUZZER_PIN);
+        enable_interrupts(GLOBAL);  // Kesmeleri tekrar etkinleştirir ve servoyu/sensörü harekete geçirir
+    }
+}
