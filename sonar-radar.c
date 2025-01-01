@@ -24,3 +24,7 @@
 
 // PWM ve servo motor için pin
 #define PWM_PIN PIN_C2  // Servo için PWM çıkışı
+
+// Ultrasonik sensör pinleri
+#define TRIGGER_PIN PIN_B0
+#define ECHO_PIN PIN_B1
