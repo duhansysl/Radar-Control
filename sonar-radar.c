@@ -31,3 +31,20 @@
 
 // Radar ölçüm menzili (LÜTFEN GİRİNİZ!!!)
 #define RADAR_DISTANCE 20 // CM cinsinden mesafe
+
+
+
+//----------------------- P I C - C O N F I G U R A T I O N  -------------------------------------------------------
+
+void set_pic() {
+    set_tris_b(0x22);  							// TRIGGER_PIN çıkış, ECHO_PIN ve BUTTON_PIN giriş olarak ayarla
+    set_tris_c(0x00);  							// PWM çıkış pini ayarları
+    set_tris_d(0x00);  							// LCD pin ayarları
+    setup_timer_0(RTCC_INTERNAL | RTCC_DIV_8);  // Timer0 ayarları
+    set_timer0(231);  							// Timer0 başlangıç değeri
+    enable_interrupts(INT_timer0);  			// Timer0 kesmesi etkinleştir
+    enable_interrupts(GLOBAL);  				// Global kesmeleri etkinleştir
+    setup_timer_1(T1_INTERNAL | T1_DIV_BY_2);  	// Timer1 ayarları
+    set_timer1(0);  							// Timer1 sıfırla
+    lcd_init();									// LCD'yi ayarla
+}
