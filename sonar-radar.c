@@ -18,3 +18,6 @@
 
 // Buzzer tanımlaması
 #define BUZZER_PIN PIN_B4  // Buzzer'ın bağlı olduğu pin - Çıkış pini
+
+// Buton tanımlamasını yaptım
+#define BUTTON PIN_B7  // Butonun bağlı olduğu pin - Giriş pini
