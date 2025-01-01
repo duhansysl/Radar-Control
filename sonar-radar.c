@@ -2,7 +2,7 @@
 
 #include <16F877A.h>
 #use delay(clock=4M)  // 4 MHz osilatör frekansı
-#fuses XT             // Osilatör tipi
+#fuses XT, WDT        // Osilatör tipi ve Watchdog Timer etkinleştirildi
 
 // LCD tanımlamalarını yaptım
 #define LCD_RS_PIN PIN_D0
@@ -32,8 +32,6 @@
 // Radar ölçüm menzili (LÜTFEN GİRİNİZ!!!)
 #define RADAR_DISTANCE 20 // CM cinsinden mesafe
 
-
-
 //----------------------- P I C - C O N F I G U R A T I O N  -------------------------------------------------------
 
 void set_pic() {
@@ -47,6 +45,8 @@ void set_pic() {
     setup_timer_1(T1_INTERNAL | T1_DIV_BY_2);  	// Timer1 ayarları
     set_timer1(0);  							// Timer1 sıfırla
     lcd_init();									// LCD'yi ayarla
+
+    setup_wdt(WDT_2304MS);  					// Watchdog Timer zaman aşımı süresini ayarla
 }
 
 //----------------------- S E R V O  -  M O T O R -------------------------------------------------------
@@ -61,6 +61,7 @@ int8 yon = 1;  	// 1: Ileri, -1: Geri
 #int_timer0
 void move_servo() {
     set_timer0(231); 				// Timer0'i yeniden başlat (~1 ms)
+    restart_wdt();                  // Watchdog Timer'ı sıfırla
     if (sayac == 0)					// Servo PWM sinyali üretimi
         output_high(pin_c2);  		// PWM sinyali başlat (pin_c2'de)
     if (sayac >= duty)
@@ -137,6 +138,7 @@ void main(void) {
     set_pic();  				// PIC ayarlarını yap
 
     while (TRUE) {
+        restart_wdt();          // Watchdog Timer'ı sıfırla
         measure_distance();  	// Mesafe ölçümünü yap
     }
 }
