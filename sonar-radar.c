@@ -21,3 +21,6 @@
 
 // Buton tanımlamasını yaptım
 #define BUTTON PIN_B7  // Butonun bağlı olduğu pin - Giriş pini
+
+// PWM ve servo motor için pin
+#define PWM_PIN PIN_C2  // Servo için PWM çıkışı
