@@ -15,3 +15,6 @@
 
 // LCD kütüphanesi ekledim
 #include "lcd.c"
+
+// Buzzer tanımlaması
+#define BUZZER_PIN PIN_B4  // Buzzer'ın bağlı olduğu pin - Çıkış pini
