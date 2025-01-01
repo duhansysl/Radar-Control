@@ -130,3 +130,13 @@ void measure_distance() {
         enable_interrupts(GLOBAL);  // Kesmeleri tekrar etkinleştirir ve servoyu/sensörü harekete geçirir
     }
 }
+
+//----------------------- M A I N - F O N K S İ Y O N U -------------------------------------------------------
+
+void main(void) {
+    set_pic();  				// PIC ayarlarını yap
+
+    while (TRUE) {
+        measure_distance();  	// Mesafe ölçümünü yap
+    }
+}
