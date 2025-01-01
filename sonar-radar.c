@@ -48,3 +48,36 @@ void set_pic() {
     set_timer1(0);  							// Timer1 sıfırla
     lcd_init();									// LCD'yi ayarla
 }
+
+//----------------------- S E R V O  -  M O T O R -------------------------------------------------------
+
+// Gerekli değişkenler
+int sayac = 0, duty = 0, adim = 0;
+const int deger[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // Servo motorun oransal açı değerleri
+int16 gecikme = 0;
+int8 yon = 1;  	// 1: Ileri, -1: Geri
+
+// Timer0 kesmesi ile servo kontrolu yapan fonksiyon
+#int_timer0
+void move_servo() {
+    set_timer0(231); 				// Timer0'i yeniden başlat (~1 ms)
+    if (sayac == 0)					// Servo PWM sinyali üretimi
+        output_high(pin_c2);  		// PWM sinyali başlat (pin_c2'de)
+    if (sayac >= duty)
+        output_low(pin_c2);  		// PWM sinyali bitir (pin_c2'de)
+    sayac++;
+    if (sayac == 50) {
+        sayac = 0;
+    }
+    gecikme++;
+    if (gecikme > 320) {  			// Gecikmeyi azaltarak hareketi hızlandır
+        gecikme = 0;
+        adim += yon;
+        if (adim >= 9) {  			// 9. adım sonrasında geri dön
+            yon = -1;  				// Geriye doğru hareket et
+        } else if (adim <= 0) {  	// 0. adım sonrasında ileriye dön
+            yon = 1;  				// Ileriye doğru hareket et
+        }
+        duty = deger[adim];			// Servo açısını güncelle
+    }
+}
